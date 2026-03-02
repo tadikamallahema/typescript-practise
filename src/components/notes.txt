@@ -1,0 +1,236 @@
+let,var and const are variable declaration keyword -- these define the scope and mutability .
+
+Datatypes are divided into 
+1. Primitive DataTypes:
+-> number,  -represent both int and float
+  string,   -represent textual data
+  boolean , -logical value true/false
+  null ,    -means intentional absence of any obj value 
+  undefined , -means uninitialized variable 
+  symbol and -means a unique, immutable value often used as object keys
+  bigint    -int with arbitary precision
+2.Non -Primitive DataTypes:
+object , 
+array , -represnet collection of elements of same datatype
+tuple, -an array with a fixed number of elements of specific types.
+enum ,  - set of named constants, allowing for a collection of related values.
+function ,   callable entity; can define parameter and return types.
+class   blueprint for creating objects with specific properties and methods.
+interface - shape of an object, specifying property names and types.
+
+
+
+Why Interfaces are used :
+ -> To prevent missing fields ,and to maintain we use interfaces in Type Script
+ --> Mianly used for database models 
+
+ interface Product {
+  name: string;
+  price: number;
+}
+
+const products: Product[] = [
+  { name: "Phone", price: 20000 },
+  { name: "Laptop", price: 60000 }
+];
+
+type:
+-----
+--> it supports union , intersection, primitives and tuples 
+Eg:
+type UserType = {
+  name: string;
+};
+
+type ID = string | number;  // cannot do this with interface
+
+
+Function Typing :
+--> means defining the types of paramters and the return value of a function 
+
+function greet(name: string): string {
+  return "Hello " + name;
+}
+greet("Hema") // output will come 
+if greet(10) || greet(true) --> will give me errors not oupt 
+
+
+enum :
+enum direc{North,East,South,West};
+     let curr=direc.East;
+     console.log(curr); 
+
+     by default value starts from 1 we can change the valyes as any type example 
+
+enum direc{North="nor",East="eas",South="so",West="wes"};
+     let curr=direc.East;
+     console.log(curr);   
+     // Output will be as eas as East has that value , but by default it would be 1
+
+
+operational Properties :
+means properties which may or maynot exist in the object 
+--> in case we are using interfaces then every field is requird right, if any field is optional then we can use this 
+ex: interface User{name:string , age?:number;}
+const u1: User = { name: "Hema" }; // valid
+const u2: User = { name: "Mani", age: 22 };
+
+
+Union Types:
+--> A variable can hold one of multiple types using |
+
+let id:string |number ;
+means id can be string or a number 
+
+Typing express Reques or Response 
+import {Reques,Response} from "express";
+
+app.get('/user',(req:Request,res:Response)=>{
+    res.send("User Data");
+})
+
+
+Typing React State 
+--> specifying the data stored in useState
+
+const [count,setCount]=useState<number>(0);
+
+interface User{ name:string,age:number}
+const [user,setUser]=useState<User>({
+    name:"Hema",age:20 });
+
+--> critical for complex components 
+
+
+Basic Generics :
+--> Generics allow functions/types to work with any type while preserving type safety
+
+generci function :
+function identity<T>(value: T): T {
+  return value;
+}
+identity<number>(10);
+identity<string>("hello");
+
+Generic array function :
+
+function firstItem<T>(arr: T[]): T {
+  return arr[0];
+}
+firstItem<number>([1, 2, 3]);
+firstItem<string>(["A", "B"]);
+
+readonly
+
+--> Makes properties immutable (unable to chaneg value once decalred )
+
+interface User {
+  readonly id: number;
+  name: string;
+}
+
+const u: User = { id: 1, name: "Hema" };
+
+u.name = "Mani"; // ✅ allowed
+u.id = 2;        // ❌ Error — readonly
+
+--> in case of using readonly for array , we cannot push new elements or remove existing elements too
+
+
+partial utility types: 
+--> Makes all properties optional in a type 
+interface User {
+  name: string;
+  age: number;
+}
+
+const u1: Partial<User> = { name: "Hema" }; // age optional
+
+function updateUser(user: Partial<User>) {
+  // can pass only fields to update
+}
+
+updateUser({ age: 25 });
+updateUser({ name: "Mani" });
+
+readonly → prevents modification
+
+Partial<T> → makes everything optional
+
+
+
+Intersection Types:
+
+--> Cover union (|) and intersection (&)
+1. Intersection:
+type A={name:string;}
+type B={age:number;}
+
+type C=A&B; 
+
+const User:C={
+name:"Hello",
+age:20
+};
+
+console.log(User);	//Output :--> { name: 'Hema', age: 20 }
+
+2. Union :
+
+function printId(id: string | number) {
+  if (typeof id === "string") {
+    console.log(id.toUpperCase());
+  } else {
+    console.log(id.toFixed(2));
+  }
+}
+
+printId("15");			--> 15
+printId(15) 			-->15.00
+
+
+--> we use any for the taking any type of value 
+
+let val:any ;
+let val2: unknown ;
+
+
+any --> disable type checking 
+unknown --> safer, must narrow first
+
+
+
+
+Utility Type:
+
+type Roles = "admin" | "user";
+
+const permissions: Record<Roles, string[]> = {
+  admin: ["read", "write"],
+  user: ["read"]
+};
+
+console.log(permissions);	//{ admin: [ 'read', 'write' ], user: [ 'read' ] }
+	
+
+
+PICK , OMIT AND REQUIRED 
+
+pick --> works like or
+
+Omit --> used to remove one field 
+
+required --> must give value for the field 
+
+
+Function Overloading :
+
+function add(a: number, b: number): number;
+function add(a: string, b: string): string;
+
+function add(a: any, b: any) {
+  return a + b;
+}
+
+console.log(add(10,15));		-->25
+console.log(add("Hello","Hema")); 	-->HelloHema
